@@ -88,10 +88,13 @@
 	let containerColor = $derived(
 		`color-mix(in srgb, var(--md-sys-color-surface-container) ${colorMix.toFixed(2)}%, var(--md-sys-color-surface))`
 	);
+	// Scrolled bars also gain level-2 elevation (research §"Common"); the search variant stays flat.
+	const shadowTransition =
+		'box-shadow var(--md-sys-motion-spring-default-effects-duration) var(--md-sys-motion-spring-default-effects-easing)';
 	let colorTransition = $derived(
 		flexible && tracking
-			? undefined
-			: 'background-color var(--md-sys-motion-spring-default-effects-duration) var(--md-sys-motion-spring-default-effects-easing)'
+			? shadowTransition
+			: `background-color var(--md-sys-motion-spring-default-effects-duration) var(--md-sys-motion-spring-default-effects-easing), ${shadowTransition}`
 	);
 	let topTitleAlpha = $derived(flexible ? topTitleAlphaEasing(fraction) : 1);
 	let bottomTitleAlpha = $derived(1 - fraction);
@@ -183,7 +186,7 @@
 		data-slot="top-app-bar"
 		data-variant={variant}
 		data-scrolled={scrolled ? '' : undefined}
-		class={cn('sticky z-10 flex w-full shrink-0 flex-col text-on-surface', className)}
+		class={cn('sticky z-10 flex w-full shrink-0 flex-col text-on-surface data-scrolled:shadow-m3-2', className)}
 		style:top="{-range}px"
 		style:background-color={containerColor}
 		style:transition={colorTransition}
@@ -277,7 +280,7 @@
 		data-variant={variant}
 		data-scrolled={scrolled ? '' : undefined}
 		class={cn(
-			'sticky top-0 z-10 h-16 w-full shrink-0 items-center px-1 text-on-surface',
+			'sticky top-0 z-10 h-16 w-full shrink-0 items-center px-1 text-on-surface data-scrolled:shadow-m3-2',
 			// side columns never shrink below their actions; the title column takes what is left and truncates
 			variant === 'center-aligned'
 				? 'grid grid-cols-[minmax(max-content,1fr)_minmax(0,auto)_minmax(max-content,1fr)]'

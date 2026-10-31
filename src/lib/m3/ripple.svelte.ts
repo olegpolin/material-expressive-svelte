@@ -192,7 +192,8 @@ function create(withRipple: boolean, options: RippleOptions): Attachment<HTMLEle
 		function onPointerUp(e: PointerEvent) {
 			if (!e.isPrimary) return;
 			if (state === State.Holding) {
-				endPress();
+				// long press: keep the located ripple and release it on `click` (material-web WAITING_FOR_CLICK)
+				state = State.WaitingForClick;
 			} else if (state === State.TouchDelay) {
 				// quick tap: show the ripple now, release on click
 				state = State.WaitingForClick;

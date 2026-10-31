@@ -31,6 +31,8 @@
 			"[&_[data-slot=icon]]:[--m3-icon-size:var(--fab-icon)]! [&_[data-slot=icon]]:[--m3-icon-opsz:var(--fab-icon-opsz)]!",
 			"[&_svg]:pointer-events-none [&_svg]:size-(--fab-icon) [&_svg]:shrink-0",
 			"disabled:pointer-events-none disabled:bg-on-surface/10 disabled:text-on-surface/38 disabled:shadow-none",
+			// `disabled:` never matches an <a>; the link branch sets aria-disabled instead
+			"aria-disabled:pointer-events-none aria-disabled:bg-on-surface/10 aria-disabled:text-on-surface/38 aria-disabled:shadow-none",
 		],
 		variants: {
 			size: {
@@ -97,6 +99,8 @@
 		class={classes}
 		href={disabled ? undefined : href}
 		aria-disabled={disabled}
+		role={disabled ? "link" : undefined}
+		tabindex={disabled ? -1 : undefined}
 		{...restProps}
 		{@attach ripple()}
 	>

@@ -55,10 +55,10 @@
 	const end = $derived(endDate ? new Date(Date.UTC(endDate.year, endDate.month - 1, endDate.day)) : TODAY);
 	const subtitle = $derived(`${WORKSPACE.name} workspace · ${rangeLabel(range, end)}`);
 
-	const kpis = $derived(getKpis(range));
+	const kpis = $derived(getKpis(range, end));
 	const sessions = $derived(getSessions(range, end));
-	const categories = $derived(getCategories(range));
-	const sources = $derived(getSources(range));
+	const categories = $derived(getCategories(range, end));
+	const sources = $derived(getSources(range, end));
 
 	// ---------------------------------------------------------------- chart series chips
 	let showWeb = $state(true);

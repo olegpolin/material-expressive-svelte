@@ -93,7 +93,8 @@
 		inset: -10px -2px;
 	}
 
-	.m3-switch[data-icons] {
+	/* Unselected handle is 16dp unless it carries an icon (icons="both"). */
+	.m3-switch[data-icons="both"] {
 		--_size: 24px;
 	}
 	.m3-switch:is(:hover, :focus-visible, :active, [data-preview]) {

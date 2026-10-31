@@ -17,7 +17,7 @@
 @import '@fontsource-variable/google-sans-flex/full.css';
 @import 'material-symbols/rounded.css';
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* ==========================================================================
    1. COLOR — M3 baseline scheme (docs/research/color.md §2.1 / §7.3, current spec,

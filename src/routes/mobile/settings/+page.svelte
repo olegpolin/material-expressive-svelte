@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resetMode, userPrefersMode } from 'mode-watcher';
 	import * as AlertDialog from '#lib/components/ui/alert-dialog/index.js';
 	import * as Avatar from '#lib/components/ui/avatar/index.js';
 	import { Button } from '#lib/components/ui/button/index.js';
@@ -142,11 +143,18 @@
 	<!-- display -->
 	{@render groupTitle('Display')}
 	<List variant="segmented" class="px-4">
-		<ListItem headline="Dark theme" supportingText="Follows the system by default" leadingIcon="dark_mode">
+		<ListItem
+			headline="Dark theme"
+			supportingText={userPrefersMode.current === 'system' ? 'Following the system setting' : 'Set manually'}
+			leadingIcon="dark_mode"
+		>
 			{#snippet trailing()}
 				<Switch bind:checked={() => theme.dark, (v) => (theme.dark = v)} icons="checked" aria-label="Dark theme" />
 			{/snippet}
 		</ListItem>
+		{#if userPrefersMode.current !== 'system'}
+			<Button variant="text" size="sm" class="ms-4 self-start" onclick={() => resetMode()}>Use system setting</Button>
+		{/if}
 		<ListItem headline="Brightness" supportingText="{shell.brightness}%" leadingIcon="brightness_6">
 			{#snippet trailing()}
 				<Slider bind:value={shell.brightness} min={20} max={100} size="xs" class="w-36" aria-label="Brightness" />

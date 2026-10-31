@@ -12,7 +12,7 @@
  * Usage (root layout):   const theme = createTheme(); theme.start();
  * Usage (anywhere below): const theme = getTheme(); theme.seed = '#0b57d0';
  */
-import { createContext } from 'svelte';
+import { createContext, untrack } from 'svelte';
 import { mode, setMode } from 'mode-watcher';
 import type { DynamicScheme } from '@material/material-color-utilities';
 import { BASELINE_DARK, BASELINE_LIGHT, COLOR_ROLES, cssVar, roleToCamel, type ColorMap } from './color-roles.js';
@@ -221,7 +221,10 @@ export class ThemeState {
 	 * because it creates effects. Effects never run on the server.
 	 */
 	start() {
-		this.#restore();
+		// Restore in an effect (after hydration), not during init: the server rendered the baseline
+		// seed, and reading localStorage before the first client render would make them disagree.
+		// THEME_BOOT_SCRIPT already painted the saved CSS variables, so nothing flashes.
+		$effect(() => untrack(() => this.#restore()));
 		$effect(() => {
 			if (!this.isBaseline && !this.#mcu) {
 				import('@material/material-color-utilities').then((m) => (this.#mcu = m));

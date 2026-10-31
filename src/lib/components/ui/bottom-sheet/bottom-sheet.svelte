@@ -33,13 +33,21 @@
 			return !!restProps.snapPoints?.length;
 		},
 	});
+
+	// vaul defaults `fadeFromIndex` to the last snap point, which hides the modal scrim until then;
+	// §8 adds the 32% scrim to every modal detent. An explicit caller value still wins.
+	const rootProps = $derived(
+		modal && restProps.snapPoints?.length && restProps.fadeFromIndex === undefined
+			? ({ ...restProps, fadeFromIndex: 0 } as DrawerPrimitive.RootProps)
+			: restProps
+	);
 </script>
 
 <DrawerPrimitive.Root
+	{...rootProps}
 	bind:open
 	bind:activeSnapPoint
 	{modal}
 	{container}
 	{shouldScaleBackground}
-	{...restProps}
 />
