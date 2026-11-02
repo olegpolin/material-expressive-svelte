@@ -91,6 +91,13 @@ export function tickLabel(range: RangeKey, d: Date, long = false): string {
 }
 
 const RANGE_SEED: Record<RangeKey, number> = { day: 11, week: 23, month: 37, year: 53 };
+/** Days between `end` and TODAY, so a different ending date seeds different mock numbers. */
+const daysFromToday = (end: Date) => Math.round((end.getTime() - TODAY.getTime()) / 86_400_000);
+/** ±6% multiplier that is exactly 1 for the default end date. */
+function endDrift(seed: number, end: Date) {
+	const shift = daysFromToday(end);
+	return shift === 0 ? 1 : 1 + (prng(seed * 13 + shift)() - 0.5) * 0.12;
+}
 const RANGE_SCALE: Record<RangeKey, number> = { day: 1 / 26, week: 0.24, month: 1, year: 11.6 };
 
 // ------------------------------------------------------------------ sessions (area chart)
@@ -148,15 +155,18 @@ function spark(seed: number, n: number, trend: number): number[] {
 	return Array.from({ length: n }, () => (v = Math.max(5, v + trend + (rnd() - 0.45) * 12)));
 }
 
-export function getKpis(range: RangeKey): Kpi[] {
-	const s = RANGE_SCALE[range];
-	const seed = RANGE_SEED[range];
+export function getKpis(range: RangeKey, end: Date = TODAY): Kpi[] {
+	const drift = endDrift(RANGE_SEED[range], end);
+	const s = RANGE_SCALE[range] * drift;
+	const seed = RANGE_SEED[range] + daysFromToday(end);
 	const rnd = prng(seed * 7);
 	const jitter = () => Math.round((rnd() - 0.5) * 40) / 10;
 	const revenue = Math.round(128_400 * s);
-	const users = Math.round(range === 'year' ? 48_210 : range === 'day' ? 1_942 : 8_942 * (range === 'week' ? 0.62 : 1));
+	const users = Math.round(
+		(range === 'year' ? 48_210 : range === 'day' ? 1_942 : 8_942 * (range === 'week' ? 0.62 : 1)) * drift
+	);
 	const tasks = Math.round(1_284 * s);
-	const churn = 2.4 + (range === 'year' ? 0.7 : range === 'day' ? -0.3 : 0);
+	const churn = 2.4 + (range === 'year' ? 0.7 : range === 'day' ? -0.3 : 0) + (drift - 1) * 5;
 	return [
 		{
 			id: 'revenue',
@@ -213,9 +223,9 @@ export function getKpis(range: RangeKey): Kpi[] {
 
 export type CategoryPoint = { category: string; completed: number; open: number };
 
-export function getCategories(range: RangeKey): CategoryPoint[] {
-	const rnd = prng(RANGE_SEED[range] * 3);
-	const s = RANGE_SCALE[range];
+export function getCategories(range: RangeKey, end: Date = TODAY): CategoryPoint[] {
+	const rnd = prng((RANGE_SEED[range] + daysFromToday(end)) * 3);
+	const s = RANGE_SCALE[range] * endDrift(RANGE_SEED[range], end);
 	return ['Design', 'Apps', 'Infra', 'Growth', 'Support'].map((category, i) => {
 		const total = (120 + i * 18 + rnd() * 90) * Math.max(s, 0.08) * 3;
 		const done = 0.45 + rnd() * 0.4;
@@ -227,9 +237,9 @@ export function getCategories(range: RangeKey): CategoryPoint[] {
 
 export type SourcePoint = { source: 'direct' | 'organic' | 'referral' | 'social'; label: string; visitors: number };
 
-export function getSources(range: RangeKey): SourcePoint[] {
-	const rnd = prng(RANGE_SEED[range] * 5);
-	const s = RANGE_SCALE[range] * 41_000;
+export function getSources(range: RangeKey, end: Date = TODAY): SourcePoint[] {
+	const rnd = prng((RANGE_SEED[range] + daysFromToday(end)) * 5);
+	const s = RANGE_SCALE[range] * endDrift(RANGE_SEED[range], end) * 41_000;
 	const shares = [0.36 + rnd() * 0.06, 0.28 + rnd() * 0.05, 0.18 + rnd() * 0.04, 0.12 + rnd() * 0.03];
 	const sum = shares.reduce((a, b) => a + b, 0);
 	const labels = [

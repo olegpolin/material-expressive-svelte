@@ -32,21 +32,17 @@
 	} = $props();
 
 	const theme = getTheme();
-	let dark = $derived(theme.dark);
-	let label = $derived(dark ? 'Switch to light theme' : 'Switch to dark theme');
+	// `theme.dark` is false during SSR, so the glyphs are driven by the `.dark` class (which the
+	// mode-watcher head script sets before first paint) rather than by state; the label still
+	// reads the state and is patched on hydration.
+	let label = $derived(theme.dark ? 'Switch to light theme' : 'Switch to dark theme');
 	let iconSize = $derived(ICON_BUTTON_ICON_SIZE[size ?? 'sm']);
 
 	const swap = `${springTransition('default-spatial', 'rotate', 'scale')}, ${springTransition('fast-effects', 'opacity')}`;
 </script>
 
-{#snippet glyph(name: string, visible: boolean, hiddenRotation: string)}
-	<span
-		class={cn(
-			'absolute inset-0 grid place-items-center',
-			visible ? 'scale-100 rotate-0 opacity-100' : ['scale-50 opacity-0', hiddenRotation]
-		)}
-		style:transition={swap}
-	>
+{#snippet glyph(name: string, visibleClass: string)}
+	<span class={cn('absolute inset-0 grid place-items-center', visibleClass)} style:transition={swap}>
 		<Icon {name} size={iconSize} fill />
 	</span>
 {/snippet}
@@ -54,8 +50,9 @@
 {#snippet button(props: Record<string, unknown>)}
 	<IconButton {...props} {variant} {size} aria-label={label} class={className}>
 		<span class="relative grid" style:width="{iconSize}px" style:height="{iconSize}px" aria-hidden="true">
-			{@render glyph('dark_mode', !dark, 'rotate-90')}
-			{@render glyph('light_mode', dark, '-rotate-90')}
+			<!-- moon in light mode, sun in dark mode -->
+			{@render glyph('dark_mode', 'scale-100 rotate-0 opacity-100 dark:scale-50 dark:rotate-90 dark:opacity-0')}
+			{@render glyph('light_mode', 'scale-50 -rotate-90 opacity-0 dark:scale-100 dark:rotate-0 dark:opacity-100')}
 		</span>
 	</IconButton>
 {/snippet}

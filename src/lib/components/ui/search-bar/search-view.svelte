@@ -258,12 +258,17 @@
 							<CommandPrimitive.Input
 								bind:value
 								bind:ref={input}
-								type="search"
 								{placeholder}
 								autocomplete="off"
 								class={inputClass}
 								onkeydown={onInputKeydown}
-							/>
+							>
+								<!-- bits-ui merges its own `type="text"` last; set it after the merged props. The child
+								     snippet gets no value binding from bits-ui, so bind the element ourselves. -->
+								{#snippet child({ props })}
+									<input {...props} bind:value type="search" />
+								{/snippet}
+							</CommandPrimitive.Input>
 							{#if value}
 								<SearchBarAction icon="close" label="Clear search" class="text-on-surface-variant" onclick={clear} />
 							{/if}
@@ -299,15 +304,19 @@
 			<CommandPrimitive.Input
 				bind:value
 				bind:ref={input}
-				type="search"
 				{placeholder}
 				autocomplete="off"
-				aria-expanded={open}
 				class={inputClass}
 				onfocus={() => (open = true)}
 				onclick={() => (open = true)}
 				onkeydown={onInputKeydown}
-			/>
+			>
+				<!-- bits-ui merges `type="text"` and `aria-expanded="true"` last; override after the merged props.
+				     The child snippet gets no value binding from bits-ui, so bind the element ourselves. -->
+				{#snippet child({ props })}
+					<input {...props} bind:value type="search" role="combobox" aria-expanded={open} />
+				{/snippet}
+			</CommandPrimitive.Input>
 			{#if value}
 				<button
 					type="button"

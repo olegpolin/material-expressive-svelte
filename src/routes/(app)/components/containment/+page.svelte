@@ -510,7 +510,7 @@
 						</BottomSheet.Content>
 					</BottomSheet.Root>
 				</Demo>
-				<Demo label="Modal with snap points" spec="snapPoints 50% / 90% · scrim fades in at the last snap point">
+				<Demo label="Modal with snap points" spec="snapPoints 50% / 90% · 32% scrim at every snap point">
 					<BottomSheet.Root snapPoints={[0.5, 0.9]} bind:activeSnapPoint={modalSnap}>
 						<BottomSheet.Trigger>
 							{#snippet child({ props })}

@@ -194,8 +194,10 @@ export function animateSpring(
 		return () => {};
 	}
 	let raf = 0;
+	let stopped = false;
 	let start: number | null = null;
 	const tick = (now: number) => {
+		if (stopped) return;
 		start ??= now;
 		const t = (now - start) / 1000;
 		const value = springValue(t, spring, from, to, velocity);
@@ -206,8 +208,13 @@ export function animateSpring(
 			return;
 		}
 		onFrame(value, v);
+		// `onFrame` may have called cancel(); do not queue another frame in that case.
+		if (stopped) return;
 		raf = requestAnimationFrame(tick);
 	};
 	raf = requestAnimationFrame(tick);
-	return () => cancelAnimationFrame(raf);
+	return () => {
+		stopped = true;
+		cancelAnimationFrame(raf);
+	};
 }

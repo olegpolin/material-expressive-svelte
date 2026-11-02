@@ -54,7 +54,13 @@
 
 	// ------------------------------------------------------------ pagination
 	let pageSize = $state(8);
-	let page = $state(0);
+	// Writable derived: the pager assigns to it, and it resets to 0 whenever the row set changes
+	// (search, filters, deletes). Status edits keep the same ids and therefore the same page.
+	const resultKey = $derived(tasks.map((t) => t.id).join('\0'));
+	let page = $derived.by(() => {
+		void resultKey;
+		return 0;
+	});
 	const pageCount = $derived(Math.max(1, Math.ceil(sorted.length / pageSize)));
 	const current = $derived(Math.min(page, pageCount - 1));
 	const rows = $derived(sorted.slice(current * pageSize, current * pageSize + pageSize));

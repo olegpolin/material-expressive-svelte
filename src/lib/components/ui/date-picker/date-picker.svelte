@@ -122,6 +122,7 @@
 		{maxValue}
 		{isDateUnavailable}
 		{locale}
+		calendarLabel={label}
 		closeOnDateSelect={false}
 		weekdayFormat="narrow"
 		fixedWeeks

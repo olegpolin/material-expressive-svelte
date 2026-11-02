@@ -77,8 +77,13 @@
 	});
 
 	// Snackbars sit above the navigation bar in compact / medium windows (bar height + 8 / 12dp).
-	let snackbarOffset = $derived(expandedWindow.current ? 12 : { bottom: 76, left: 12, right: 12 });
-	const snackbarMobileOffset = { bottom: 88, left: 8, right: 8 };
+	// Rem-based so they track the `h-16` / `h-20` bars under text scaling, plus the home-indicator inset.
+	let snackbarOffset = $derived(
+		expandedWindow.current
+			? { top: '12px', left: '12px', right: '12px', bottom: 'calc(12px + env(safe-area-inset-bottom, 0px))' }
+			: { left: '12px', right: '12px', bottom: 'calc(4rem + 12px + env(safe-area-inset-bottom, 0px))' }
+	);
+	const snackbarMobileOffset = { left: '8px', right: '8px', bottom: 'calc(5rem + 8px + env(safe-area-inset-bottom, 0px))' };
 
 	let mainEl = $state<HTMLElement | null>(null);
 
@@ -224,7 +229,7 @@
 			<!-- compact / medium windows: navigation bar (tall + vertical items on compact, short + horizontal on medium) -->
 			<div class="sticky bottom-0 z-10 bg-surface-container pb-[env(safe-area-inset-bottom)] min-[840px]:hidden">
 				{#each bars as bar (bar.medium)}
-					<NavigationBar.Root variant={bar.variant} layout={bar.layout} class={bar.class}>
+					<NavigationBar.Root variant={bar.variant} layout={bar.layout} class={bar.class} aria-label="Main">
 						{#each destinations as d (d.href)}
 							<NavigationBar.Item
 								href={d.href}
