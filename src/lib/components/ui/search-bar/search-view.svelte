@@ -263,9 +263,10 @@
 								class={inputClass}
 								onkeydown={onInputKeydown}
 							>
-								<!-- bits-ui merges its own `type="text"` last; set it after the merged props -->
+								<!-- bits-ui merges its own `type="text"` last; set it after the merged props. The child
+								     snippet gets no value binding from bits-ui, so bind the element ourselves. -->
 								{#snippet child({ props })}
-									<input {...props} type="search" />
+									<input {...props} bind:value type="search" />
 								{/snippet}
 							</CommandPrimitive.Input>
 							{#if value}
@@ -310,9 +311,10 @@
 				onclick={() => (open = true)}
 				onkeydown={onInputKeydown}
 			>
-				<!-- bits-ui merges `type="text"` and `aria-expanded="true"` last; override after the merged props -->
+				<!-- bits-ui merges `type="text"` and `aria-expanded="true"` last; override after the merged props.
+				     The child snippet gets no value binding from bits-ui, so bind the element ourselves. -->
 				{#snippet child({ props })}
-					<input {...props} type="search" role="combobox" aria-expanded={open} />
+					<input {...props} bind:value type="search" role="combobox" aria-expanded={open} />
 				{/snippet}
 			</CommandPrimitive.Input>
 			{#if value}
